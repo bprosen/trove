@@ -1,5 +1,5 @@
 import type { DatabaseSync } from "node:sqlite";
-import { tx } from "./db.server";
+import { get, tx, type BookRow, type CountRow } from "./db.server";
 import { today } from "./dates";
 import { BOOK_FORMATS, BOOK_STATUSES, type ActionResult, type BookFormat, type BookStatus } from "./types";
 import { SAMPLE_BOOKS, SAMPLE_COLLECTIONS } from "./sample-data";
@@ -57,10 +57,11 @@ function status(v: unknown): BookStatus {
   return v as BookStatus;
 }
 
-function assertBook(db: DatabaseSync, bookId: number) {
-  const row = db.prepare("SELECT id, status, page_count, current_page, started_at FROM books WHERE id = ?").get(bookId) as
-    | { id: number; status: BookStatus; page_count: number | null; current_page: number; started_at: string | null }
-    | undefined;
+function assertBook(_db: DatabaseSync, bookId: number) {
+  const row = get<Pick<BookRow, "id" | "status" | "page_count" | "current_page" | "started_at">>(
+    "SELECT id, status, page_count, current_page, started_at FROM books WHERE id = ?",
+    bookId,
+  );
   if (!row) throw new UserError("Book not found");
   return row;
 }
@@ -68,13 +69,13 @@ function assertBook(db: DatabaseSync, bookId: number) {
 function setGenres(db: DatabaseSync, bookId: number, names: string[]) {
   db.prepare("DELETE FROM book_genres WHERE book_id = ?").run(bookId);
   const insertGenre = db.prepare("INSERT INTO genres (name) VALUES (?) ON CONFLICT(name) DO NOTHING");
-  const findGenre = db.prepare("SELECT id FROM genres WHERE name = ? COLLATE NOCASE");
   const link = db.prepare("INSERT OR IGNORE INTO book_genres (book_id, genre_id) VALUES (?, ?)");
   for (const raw of names) {
     const name = raw.trim().slice(0, 60);
     if (!name) continue;
     insertGenre.run(name);
-    const g = findGenre.get(name) as { id: number };
+    const g = get<{ id: number }>("SELECT id FROM genres WHERE name = ? COLLATE NOCASE", name);
+    if (!g) throw new Error(`Genre "${name}" missing after insert`);
     link.run(bookId, g.id);
   }
 }
@@ -334,7 +335,7 @@ export async function updateSettings(input: { displayName: string; dailyPageGoal
 
 export async function loadSampleData() {
   return mutate((db) => {
-    const count = (db.prepare("SELECT COUNT(*) AS n FROM books").get() as { n: number }).n;
+    const count = get<CountRow>("SELECT COUNT(*) AS n FROM books")?.n ?? 0;
     if (count > 0) throw new UserError("Sample data can only be loaded into an empty library");
     const ids = new Map<string, number>();
     const insertBook = db.prepare(

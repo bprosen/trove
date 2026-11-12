@@ -1,4 +1,4 @@
-import { getDb } from "./db.server";
+import { all, get, type BookRow, type CountRow, type ReadingSessionRow } from "./db.server";
 import { readSettings } from "./queries.server";
 import { addDays, daysBetween, parseISODate, today as todayISO } from "./dates";
 import { XP_RULES, levelFromXp, type LevelInfo } from "./gamification";
@@ -45,29 +45,16 @@ type Snapshot = {
 
 /** One pass over the DB producing every number the gamification layer needs. */
 function snapshot(): Snapshot {
-  const db = getDb();
   const settings = readSettings();
   const today = todayISO();
 
-  const books = db
-    .prepare("SELECT id, author, status, rating, favorite, page_count, started_at, finished_at FROM books")
-    .all() as {
-    id: number;
-    author: string;
-    status: BookStatus;
-    rating: number | null;
-    favorite: number;
-    page_count: number | null;
-    started_at: string | null;
-    finished_at: string | null;
-  }[];
+  const books = all<Pick<BookRow, "id" | "author" | "status" | "rating" | "favorite" | "page_count" | "started_at" | "finished_at">>(
+    "SELECT id, author, status, rating, favorite, page_count, started_at, finished_at FROM books",
+  );
 
-  const sessions = db.prepare("SELECT book_id, date, pages, minutes FROM reading_sessions").all() as {
-    book_id: number;
-    date: string;
-    pages: number;
-    minutes: number;
-  }[];
+  const sessions = all<Pick<ReadingSessionRow, "book_id" | "date" | "pages" | "minutes">>(
+    "SELECT book_id, date, pages, minutes FROM reading_sessions",
+  );
 
   const days = new Map<string, DayAgg>();
   const booksWithSessions = new Set<number>();
@@ -110,16 +97,13 @@ function snapshot(): Snapshot {
     }
   }
 
-  const genresExplored = (
-    db
-      .prepare(
-        `SELECT COUNT(DISTINCT bg.genre_id) AS n FROM book_genres bg JOIN books b ON b.id = bg.book_id
-         WHERE b.status IN ('reading','finished')`,
-      )
-      .get() as { n: number }
-  ).n;
-  const reviews = (db.prepare("SELECT COUNT(*) AS n FROM reviews").get() as { n: number }).n;
-  const collections = (db.prepare("SELECT COUNT(*) AS n FROM collections").get() as { n: number }).n;
+  const count = (sql: string) => get<CountRow>(sql)?.n ?? 0;
+  const genresExplored = count(
+    `SELECT COUNT(DISTINCT bg.genre_id) AS n FROM book_genres bg JOIN books b ON b.id = bg.book_id
+     WHERE b.status IN ('reading','finished')`,
+  );
+  const reviews = count("SELECT COUNT(*) AS n FROM reviews");
+  const collections = count("SELECT COUNT(*) AS n FROM collections");
 
   // Streaks — a "reading day" is any day with pages or minutes logged.
   const readingDates = [...days.entries()]
@@ -228,7 +212,6 @@ export type Stats = {
 
 export async function getStats(): Promise<Stats> {
   const snap = snapshot();
-  const db = getDb();
 
   const point = (date: string): DayPoint => {
     const d = snap.days.get(date);
@@ -254,17 +237,15 @@ export async function getStats(): Promise<Stats> {
   for (const [date, d] of snap.days) weekdayTotals[parseISODate(date).getDay()] += d.pages;
   const weekday = weekdayNames.map((day, i) => ({ day, pages: weekdayTotals[i] }));
 
-  const genreRows = db
-    .prepare(
-      `SELECT g.name, COUNT(*) AS books FROM book_genres bg
-       JOIN genres g ON g.id = bg.genre_id JOIN books b ON b.id = bg.book_id
-       WHERE b.status IN ('reading','finished')
-       GROUP BY g.id ORDER BY books DESC, g.name`,
-    )
-    .all() as { name: string; books: number }[];
+  const genreRows = all<{ name: string; books: number }>(
+    `SELECT g.name, COUNT(*) AS books FROM book_genres bg
+     JOIN genres g ON g.id = bg.genre_id JOIN books b ON b.id = bg.book_id
+     WHERE b.status IN ('reading','finished')
+     GROUP BY g.id ORDER BY books DESC, g.name`,
+  );
   // Categorical palette has 8 validated slots — fold the tail into "Other".
-  const genreBreakdown = genreRows.slice(0, 7).map((r) => ({ name: r.name, books: Number(r.books) }));
-  const otherCount = genreRows.slice(7).reduce((s, r) => s + Number(r.books), 0);
+  const genreBreakdown = genreRows.slice(0, 7).map((r) => ({ name: r.name, books: r.books }));
+  const otherCount = genreRows.slice(7).reduce((s, r) => s + r.books, 0);
   if (otherCount > 0) genreBreakdown.push({ name: "Other", books: otherCount });
 
   const sumPages = (pts: DayPoint[]) => pts.reduce((s, p) => s + p.pages, 0);
