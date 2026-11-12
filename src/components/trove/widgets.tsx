@@ -1,12 +1,9 @@
-import Link from "next/link";
-import { Check, Flame, Sparkles, Target, Trophy } from "lucide-react";
+import { Check, Flame, Sparkles, Target } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { ACHIEVEMENTS_BY_ID, TIER_STYLES } from "@/lib/achievements";
 import { parseISODate } from "@/lib/dates";
-import type { Quest, Stats } from "@/lib/stats";
+import type { Quest, Stats } from "@/lib/stats.server";
 import { cn } from "@/lib/utils";
-import { AchievementIcon } from "./achievement-icon";
 
 export function Ring({ value, size = 112, stroke = 10, children }: { value: number; size?: number; stroke?: number; children?: React.ReactNode }) {
   const r = (size - stroke) / 2;
@@ -181,48 +178,6 @@ export function YearGoalCard({ stats }: { stats: Stats }) {
               ? `${delta === 0 ? "Right on" : `${delta} book${delta === 1 ? "" : "s"} ahead of`} schedule`
               : `${-delta} book${delta === -1 ? "" : "s"} behind schedule`}
         </p>
-      </CardContent>
-    </Card>
-  );
-}
-
-export function RecentAchievementsCard({ stats }: { stats: Stats }) {
-  return (
-    <Card>
-      <CardHeader className="flex flex-row items-start justify-between">
-        <div className="space-y-1.5">
-          <CardTitle>Achievements</CardTitle>
-          <CardDescription>
-            {stats.unlockedCount} unlocked · +{stats.achievementXp.toLocaleString()} XP
-          </CardDescription>
-        </div>
-        <Link href="/achievements" className="text-sm text-primary hover:underline">
-          View all
-        </Link>
-      </CardHeader>
-      <CardContent>
-        {stats.recentUnlocks.length === 0 ? (
-          <p className="flex items-center gap-2 text-sm text-muted-foreground">
-            <Trophy className="size-4" /> Add a book to unlock your first achievement.
-          </p>
-        ) : (
-          <ul className="space-y-3">
-            {stats.recentUnlocks.map(({ id }) => {
-              const def = ACHIEVEMENTS_BY_ID.get(id)!;
-              return (
-                <li key={id} className="flex items-center gap-3">
-                  <AchievementIcon achievement={def} className="size-9" />
-                  <div className="min-w-0">
-                    <p className="text-sm font-medium">{def.name}</p>
-                    <p className="truncate text-xs text-muted-foreground">
-                      {TIER_STYLES[def.tier].label} · {def.description}
-                    </p>
-                  </div>
-                </li>
-              );
-            })}
-          </ul>
-        )}
       </CardContent>
     </Card>
   );

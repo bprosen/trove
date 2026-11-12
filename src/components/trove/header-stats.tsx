@@ -1,14 +1,15 @@
-import Link from "next/link";
+import { Link } from "@tanstack/react-router";
 import { Flame, Sparkles } from "lucide-react";
-import { getStats } from "@/lib/stats";
+import type { LevelInfo } from "@/lib/gamification";
 import { cn } from "@/lib/utils";
 
-export async function HeaderStats() {
-  const s = await getStats();
+export type HeaderStatsData = { currentStreak: number; streakAtRisk: boolean; level: LevelInfo };
+
+export function HeaderStats({ stats: s }: { stats: HeaderStatsData }) {
   return (
     <div className="flex items-center gap-2">
       <Link
-        href="/"
+        to="/"
         title={s.streakAtRisk ? "Read today to keep your streak alive!" : "Current reading streak"}
         className={cn(
           "flex items-center gap-1.5 rounded-full border px-3 py-1 text-sm font-medium tabular-nums",
@@ -21,7 +22,7 @@ export async function HeaderStats() {
         <span className="sr-only">day streak</span>
       </Link>
       <Link
-        href="/achievements"
+        to="/achievements"
         className="flex items-center gap-2 rounded-full border px-3 py-1 text-sm"
         title={`${s.level.xpIntoLevel} / ${s.level.xpForNext} XP to level ${s.level.level + 1}`}
       >
@@ -33,8 +34,4 @@ export async function HeaderStats() {
       </Link>
     </div>
   );
-}
-
-export function HeaderStatsFallback() {
-  return <div className="h-8 w-40 animate-pulse rounded-full bg-muted" />;
 }

@@ -1,7 +1,5 @@
-"use client";
-
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useNavigate } from "@tanstack/react-router";
 import { Loader2, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
@@ -18,7 +16,7 @@ export function CollectionDialog({
   collection?: { id: number; name: string; description: string | null };
   children?: React.ReactNode;
 }) {
-  const router = useRouter();
+  const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const [name, setName] = useState(collection?.name ?? "");
   const [description, setDescription] = useState(collection?.description ?? "");
@@ -35,7 +33,7 @@ export function CollectionDialog({
           setOpen(false);
           setName("");
           setDescription("");
-          if (data) router.push(`/collections/${data.id}`);
+          if (data) return navigate({ to: "/collections/$id", params: { id: String(data.id) } });
         },
       });
     }

@@ -1,6 +1,4 @@
-"use client";
-
-import Link from "next/link";
+import { Link } from "@tanstack/react-router";
 import { Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { deleteSession } from "@/lib/actions";
@@ -17,13 +15,13 @@ export function SessionList({ sessions, showBook = true }: { sessions: ReadingSe
       {sessions.map((s) => (
         <li key={s.id} className="group flex items-center gap-3 py-3">
           {showBook && (
-            <Link href={`/books/${s.book_id}`} className="w-9 shrink-0">
+            <Link to="/books/$id" params={{ id: String(s.book_id) }} className="w-9 shrink-0">
               <BookCover src={s.book_cover} title={s.book_title} />
             </Link>
           )}
           <div className="min-w-0 flex-1">
             {showBook && (
-              <Link href={`/books/${s.book_id}`} className="line-clamp-1 text-sm font-medium hover:underline">
+              <Link to="/books/$id" params={{ id: String(s.book_id) }} className="line-clamp-1 text-sm font-medium hover:underline">
                 {s.book_title}
               </Link>
             )}

@@ -10,12 +10,11 @@
 !.yarn/releases
 !.yarn/versions
 
-# testing
-/coverage
-
-# next.js
-/.next/
-/out/
+# build output
+/dist/
+/.output/
+/.tanstack/
+/.vinxi/
 
 # production
 /build
@@ -33,12 +32,18 @@ yarn-error.log*
 # env files (can opt-in for committing if needed)
 .env*
 
-# vercel
-.vercel
-
 # typescript
 *.tsbuildinfo
-next-env.d.ts
 
-# local database
+# local database (personal reading data — never commit)
 /data
+*.db
+*.db-shm
+*.db-wal
+*.sqlite
+
+# version control metadata (keep this folder out of the project)
+.git
+
+# test coverage reports
+/coverage

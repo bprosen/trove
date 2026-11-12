@@ -1,7 +1,4 @@
-"use client";
-
-import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { Link, useNavigate } from "@tanstack/react-router";
 import { FolderPlus, Heart, MoreHorizontal, Pencil, Trash2 } from "lucide-react";
 import {
   AlertDialog,
@@ -88,7 +85,7 @@ export function CollectionsPopover({
         {collections.length === 0 ? (
           <p className="text-sm text-muted-foreground">
             No collections yet.{" "}
-            <Link href="/collections" className="text-primary hover:underline">
+            <Link to="/collections" className="text-primary hover:underline">
               Create one
             </Link>
           </p>
@@ -117,7 +114,7 @@ export function CollectionsPopover({
 }
 
 export function BookMenu({ book }: { book: Pick<Book, "id" | "title"> }) {
-  const router = useRouter();
+  const navigate = useNavigate();
   const { run, pending } = useMutation();
   return (
     <AlertDialog>
@@ -129,7 +126,7 @@ export function BookMenu({ book }: { book: Pick<Book, "id" | "title"> }) {
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
           <DropdownMenuItem asChild>
-            <Link href={`/books/${book.id}/edit`}>
+            <Link to="/books/$id/edit" params={{ id: String(book.id) }}>
               <Pencil /> Edit details
             </Link>
           </DropdownMenuItem>
@@ -144,7 +141,7 @@ export function BookMenu({ book }: { book: Pick<Book, "id" | "title"> }) {
         <AlertDialogHeader>
           <AlertDialogTitle>Delete “{book.title}”?</AlertDialogTitle>
           <AlertDialogDescription>
-            This removes the book along with its reading sessions and review. Achievements you&apos;ve already earned are kept.
+            This removes the book along with its reading sessions and review.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
@@ -152,7 +149,7 @@ export function BookMenu({ book }: { book: Pick<Book, "id" | "title"> }) {
           <AlertDialogAction
             variant="destructive"
             disabled={pending}
-            onClick={() => run(() => deleteBook(book.id), { success: "Book deleted", onSuccess: () => router.push("/library") })}
+            onClick={() => run(() => deleteBook(book.id), { success: "Book deleted", onSuccess: () => navigate({ to: "/library" }) })}
           >
             Delete
           </AlertDialogAction>

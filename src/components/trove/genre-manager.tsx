@@ -1,7 +1,5 @@
-"use client";
-
+import { Link } from "@tanstack/react-router";
 import { useState } from "react";
-import Link from "next/link";
 import { Check, Pencil, Plus, Star, Trash2, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -58,7 +56,7 @@ function GenreRow({ g }: { g: G }) {
             </form>
           ) : (
             <>
-              <Link href={`/library?genre=${g.id}`} className="font-heading text-lg font-semibold hover:underline">
+              <Link to="/library" search={{ genre: g.id }} className="font-heading text-lg font-semibold hover:underline">
                 {g.name}
               </Link>
               <div className="flex">

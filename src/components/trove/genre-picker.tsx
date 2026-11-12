@@ -1,5 +1,3 @@
-"use client";
-
 import { useId, useState } from "react";
 import { X } from "lucide-react";
 import { Badge } from "@/components/ui/badge";

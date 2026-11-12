@@ -1,5 +1,3 @@
-"use client";
-
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 
@@ -41,7 +39,6 @@ export function BookCover({
       )}
     >
       {showImage ? (
-        // eslint-disable-next-line @next/next/no-img-element -- local/data URLs only
         <img
           src={src}
           alt={`Cover of ${title}`}

@@ -1,8 +1,6 @@
-"use client";
-
 import { useState } from "react";
 import { formatDate } from "@/lib/dates";
-import type { DayPoint } from "@/lib/stats";
+import type { DayPoint } from "@/lib/stats.server";
 import { cn } from "@/lib/utils";
 
 const LEVEL_CLASSES = ["bg-heat-0", "bg-heat-1", "bg-heat-2", "bg-heat-3", "bg-heat-4"];

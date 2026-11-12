@@ -1,6 +1,4 @@
-"use client";
-
-import { useRouter } from "next/navigation";
+import { useNavigate } from "@tanstack/react-router";
 import { Pencil, Trash2, X } from "lucide-react";
 import {
   AlertDialog,
@@ -22,7 +20,7 @@ import { useMutation } from "./use-mutation";
 type C = { id: number; name: string; description: string | null };
 
 export function CollectionToolbar({ collection, addable }: { collection: C; addable: { id: number; title: string }[] }) {
-  const router = useRouter();
+  const navigate = useNavigate();
   const { run, pending } = useMutation();
   return (
     <>
@@ -64,7 +62,7 @@ export function CollectionToolbar({ collection, addable }: { collection: C; adda
             <AlertDialogAction
               variant="destructive"
               disabled={pending}
-              onClick={() => run(() => deleteCollection(collection.id), { success: "Collection deleted", onSuccess: () => router.push("/collections") })}
+              onClick={() => run(() => deleteCollection(collection.id), { success: "Collection deleted", onSuccess: () => navigate({ to: "/collections" }) })}
             >
               Delete
             </AlertDialogAction>

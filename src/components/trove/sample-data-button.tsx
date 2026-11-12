@@ -1,5 +1,3 @@
-"use client";
-
 import { Loader2, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { loadSampleData } from "@/lib/actions";

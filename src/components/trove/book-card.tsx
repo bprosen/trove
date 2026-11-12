@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { Link } from "@tanstack/react-router";
 import { Heart } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import type { Book } from "@/lib/types";
@@ -9,7 +9,7 @@ import { StatusBadge } from "./status-badge";
 export function BookCard({ book }: { book: Book }) {
   const pct = book.status === "reading" && book.page_count ? Math.round((book.current_page / book.page_count) * 100) : null;
   return (
-    <Link href={`/books/${book.id}`} className="group flex flex-col gap-2">
+    <Link to="/books/$id" params={{ id: String(book.id) }} className="group flex flex-col gap-2">
       <div className="relative transition-transform duration-200 group-hover:-translate-y-1">
         <BookCover src={book.cover_url} title={book.title} author={book.author} className="shadow-md group-hover:shadow-lg" />
         {book.favorite && (

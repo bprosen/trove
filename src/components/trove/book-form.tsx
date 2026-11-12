@@ -1,7 +1,5 @@
-"use client";
-
 import { useMemo, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useNavigate, useRouter } from "@tanstack/react-router";
 import { Loader2, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -66,6 +64,7 @@ function CatalogSearch({ onPick }: { onPick: (b: CatalogBook) => void }) {
 
 export function BookForm({ book, genreSuggestions }: { book?: Book; genreSuggestions: string[] }) {
   const router = useRouter();
+  const navigate = useNavigate();
   const { run, pending } = useMutation();
   const [form, setForm] = useState({
     title: book?.title ?? "",
@@ -100,12 +99,12 @@ export function BookForm({ book, genreSuggestions }: { book?: Book; genreSuggest
     if (book) {
       run(() => updateBook(book.id, input), {
         success: "Book updated",
-        onSuccess: () => router.push(`/books/${book.id}`),
+        onSuccess: () => navigate({ to: "/books/$id", params: { id: String(book.id) } }),
       });
     } else {
       run(() => createBook(input), {
         success: `Added “${form.title}” to your library`,
-        onSuccess: (data) => data && router.push(`/books/${data.id}`),
+        onSuccess: (data) => data && navigate({ to: "/books/$id", params: { id: String(data.id) } }),
       });
     }
   }
@@ -184,7 +183,7 @@ export function BookForm({ book, genreSuggestions }: { book?: Book; genreSuggest
           </CardContent>
         </Card>
         <div className="flex justify-end gap-2">
-          <Button type="button" variant="ghost" onClick={() => router.back()}>
+          <Button type="button" variant="ghost" onClick={() => router.history.back()}>
             Cancel
           </Button>
           <Button type="submit" form="book-form" disabled={pending}>

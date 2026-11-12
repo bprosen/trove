@@ -1,6 +1,9 @@
 export const BOOK_STATUSES = ["want", "reading", "finished", "dnf"] as const;
 export type BookStatus = (typeof BOOK_STATUSES)[number];
 
+export const BOOK_SORTS = ["recent", "title", "author", "rating", "finished"] as const;
+export type BookSort = (typeof BOOK_SORTS)[number];
+
 export const STATUS_LABELS: Record<BookStatus, string> = {
   want: "Want to read",
   reading: "Reading",
@@ -81,5 +84,5 @@ export type Settings = {
 
 /** Result shape returned by every mutating server action. */
 export type ActionResult<T = undefined> =
-  | { ok: true; data?: T; unlocked: string[] }
+  | { ok: true; data?: T }
   | { ok: false; error: string };

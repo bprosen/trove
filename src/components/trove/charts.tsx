@@ -1,9 +1,7 @@
-"use client";
-
 import { Bar, BarChart, CartesianGrid, Cell, Pie, PieChart, XAxis, YAxis } from "recharts";
 import { ChartContainer, ChartLegend, ChartLegendContent, ChartTooltip, ChartTooltipContent, type ChartConfig } from "@/components/ui/chart";
 import { formatDate } from "@/lib/dates";
-import type { DayPoint } from "@/lib/stats";
+import type { DayPoint } from "@/lib/stats.server";
 
 const axis = { tickLine: false, axisLine: false, tickMargin: 8 } as const;
 

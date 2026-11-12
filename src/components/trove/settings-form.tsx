@@ -1,5 +1,3 @@
-"use client";
-
 import { useState } from "react";
 import { Loader2 } from "lucide-react";
 import {
@@ -70,7 +68,7 @@ export function SettingsForm({ settings }: { settings: Settings }) {
       <Card className="border-destructive/40">
         <CardHeader>
           <CardTitle>Danger zone</CardTitle>
-          <CardDescription>Permanently delete every book, session, review, collection, and achievement.</CardDescription>
+          <CardDescription>Permanently delete every book, session, review, and collection.</CardDescription>
         </CardHeader>
         <CardContent>
           <AlertDialog>

@@ -1,8 +1,5 @@
-"use client";
 
-import { Suspense } from "react";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { Link, useLocation } from "@tanstack/react-router";
 import {
   BarChart3,
   CalendarClock,
@@ -31,7 +28,9 @@ export const NAV = [
   { href: "/settings", label: "Settings", icon: Settings },
 ] as const;
 
-const MOBILE = ["/", "/library", "/sessions", "/stats"];
+type NavHref = (typeof NAV)[number]["href"];
+
+const MOBILE: readonly string[] = ["/", "/library", "/sessions", "/stats"];
 
 function isActive(pathname: string, href: string) {
   if (href === "/") return pathname === "/";
@@ -41,7 +40,7 @@ function isActive(pathname: string, href: string) {
 
 export function Brand() {
   return (
-    <Link href="/" className="flex items-center gap-2 font-heading text-xl font-semibold tracking-tight">
+    <Link to="/" className="flex items-center gap-2 font-heading text-xl font-semibold tracking-tight">
       <span className="grid size-8 place-items-center rounded-lg bg-primary text-primary-foreground">
         <Gem className="size-4" />
       </span>
@@ -56,7 +55,7 @@ function SidebarLinks({ pathname }: { pathname: string | null }) {
       {NAV.map(({ href, label, icon: Icon }) => (
         <Link
           key={href}
-          href={href}
+          to={href}
           className={cn(
             "flex items-center gap-3 rounded-md px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-accent hover:text-foreground",
             pathname && isActive(pathname, href) && "bg-accent font-medium text-foreground",
@@ -78,7 +77,7 @@ function MobileLinks({ pathname }: { pathname: string | null }) {
       {NAV.filter((n) => MOBILE.includes(n.href)).map(({ href, label, icon: Icon }) => (
         <Link
           key={href}
-          href={href}
+          to={href}
           className={cn(
             "flex flex-col items-center gap-1 py-2 text-[11px] text-muted-foreground",
             pathname && isActive(pathname, href) && "text-primary",
@@ -111,11 +110,11 @@ function MobileLinks({ pathname }: { pathname: string | null }) {
   );
 }
 
-function SheetCloseLink({ href, active, children }: { href: string; active: boolean; children: React.ReactNode }) {
+function SheetCloseLink({ href, active, children }: { href: NavHref; active: boolean; children: React.ReactNode }) {
   return (
     <SheetClose asChild>
       <Link
-        href={href}
+        to={href}
         className={cn(
           "flex flex-col items-center gap-1.5 rounded-lg border p-3 text-xs text-muted-foreground hover:bg-accent",
           active && "border-primary text-primary",
@@ -127,27 +126,10 @@ function SheetCloseLink({ href, active, children }: { href: string; active: bool
   );
 }
 
-function ActiveSidebar() {
-  return <SidebarLinks pathname={usePathname()} />;
-}
-
-function ActiveMobile() {
-  return <MobileLinks pathname={usePathname()} />;
-}
-
-// usePathname() is request data under Cache Components, so the active state streams in behind Suspense.
 export function SidebarNav() {
-  return (
-    <Suspense fallback={<SidebarLinks pathname={null} />}>
-      <ActiveSidebar />
-    </Suspense>
-  );
+  return <SidebarLinks pathname={useLocation({ select: (l) => l.pathname })} />;
 }
 
 export function MobileNav() {
-  return (
-    <Suspense fallback={<MobileLinks pathname={null} />}>
-      <ActiveMobile />
-    </Suspense>
-  );
+  return <MobileLinks pathname={useLocation({ select: (l) => l.pathname })} />;
 }

@@ -1,5 +1,3 @@
-"use client";
-
 import { useState } from "react";
 import { Loader2, PenLine } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -58,7 +56,7 @@ export function ReviewEditor({ bookId, review }: { bookId: number; review: Revie
   if (!editing) {
     return (
       <div className="flex flex-col items-start gap-3">
-        <p className="text-sm text-muted-foreground">What did you think? Reviews earn +25 XP and count toward critic achievements.</p>
+        <p className="text-sm text-muted-foreground">What did you think? Reviews earn +25 XP.</p>
         <Button variant="outline" onClick={() => setEditing(true)}>
           <PenLine /> Write a review
         </Button>
