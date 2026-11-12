@@ -20,11 +20,11 @@ export function LibraryFilters({ genres, counts }: { genres: Genre[]; counts: Re
     void navigate({ search: parseLibrarySearch(next), replace: true, resetScroll: false });
   }
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: debounce re-runs only when the search text changes
   useEffect(() => {
     if (q === (search.q ?? "")) return;
     const t = setTimeout(() => update({ q }), 250);
     return () => clearTimeout(t);
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- debounce on q only
   }, [q]);
 
   const status = search.status ?? "all";
@@ -34,6 +34,7 @@ export function LibraryFilters({ genres, counts }: { genres: Genre[]; counts: Re
       <div className="flex flex-wrap gap-1.5">
         {(["all", ...BOOK_STATUSES] as const).map((s) => (
           <button
+            type="button"
             key={s}
             onClick={() => update({ status: s })}
             className={cn(

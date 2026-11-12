@@ -78,8 +78,8 @@ export function ReviewEditor({ bookId, review }: { bookId: number; review: Revie
       <Input placeholder="Headline (optional)" value={headline} onChange={(e) => setHeadline(e.target.value)} />
       <Textarea placeholder="Your thoughts…" rows={6} required value={body} onChange={(e) => setBody(e.target.value)} />
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <label className="flex items-center gap-2 text-sm">
-          <Checkbox checked={spoilers} onCheckedChange={(c) => setSpoilers(c === true)} />
+        <label htmlFor="review-spoilers" className="flex items-center gap-2 text-sm">
+          <Checkbox id="review-spoilers" checked={spoilers} onCheckedChange={(c) => setSpoilers(c === true)} />
           Contains spoilers
         </label>
         <div className="flex gap-2">

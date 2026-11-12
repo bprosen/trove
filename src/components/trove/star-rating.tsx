@@ -7,7 +7,7 @@ import { useMutation } from "./use-mutation";
 export function StarDisplay({ rating, className }: { rating: number | null; className?: string }) {
   if (!rating) return null;
   return (
-    <span className={cn("inline-flex items-center gap-0.5", className)} aria-label={`${rating} out of 5 stars`}>
+    <span role="img" className={cn("inline-flex items-center gap-0.5", className)} aria-label={`${rating} out of 5 stars`}>
       {[1, 2, 3, 4, 5].map((n) => (
         <Star key={n} className={cn("size-3.5", n <= rating ? "fill-amber-400 text-amber-400" : "text-muted-foreground/30")} />
       ))}
@@ -25,6 +25,7 @@ export function StarRating({ bookId, rating }: { bookId: number; rating: number 
   return (
     <div className="flex items-center gap-1" onMouseLeave={() => setHover(null)} role="radiogroup" aria-label="Rating">
       {[1, 2, 3, 4, 5].map((n) => (
+        // biome-ignore lint/a11y/useSemanticElements: a button with radio semantics allows clicking the current star to clear the rating
         <button
           key={n}
           type="button"

@@ -104,7 +104,7 @@ export async function listBooks(opts: {
     finished: "b.finished_at IS NULL, b.finished_at DESC",
   }[opts.sort ?? "recent"];
   const rows = getDb()
-    .prepare(`SELECT b.* FROM books b ${where.length ? "WHERE " + where.join(" AND ") : ""} ORDER BY ${order}`)
+    .prepare(`SELECT b.* FROM books b ${where.length ? `WHERE ${where.join(" AND ")}` : ""} ORDER BY ${order}`)
     .all(...params) as Row[];
   return hydrate(rows);
 }

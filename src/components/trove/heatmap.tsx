@@ -35,12 +35,15 @@ export function ReadingHeatmap({ data }: { data: DayPoint[] }) {
         )}
       </p>
       <div className="overflow-x-auto pb-1">
+        {/* biome-ignore lint/a11y/noStaticElementInteractions: mouse-only hover readout; each cell also has an accessible label */}
         <div className="flex w-max gap-[3px]" onMouseLeave={() => setHover(null)}>
-          {weeks.map((week, wi) => (
-            <div key={wi} className="flex flex-col gap-[3px]">
+          {weeks.map((week) => (
+            <div key={week[0]?.date} className="flex flex-col gap-[3px]">
               {week.map((d) => (
                 <div
                   key={d.date}
+                  role="img"
+                  aria-label={`${d.date}: ${d.pages} pages`}
                   onMouseEnter={() => setHover(d)}
                   title={`${d.date}: ${d.pages} pages`}
                   className={cn("size-[11px] rounded-[2px] transition-transform hover:scale-125", LEVEL_CLASSES[bucket(d.pages, max)])}

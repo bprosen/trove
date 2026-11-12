@@ -95,8 +95,9 @@ export function CollectionsPopover({
               const checked = memberOf.includes(c.id);
               return (
                 <li key={c.id}>
-                  <label className="flex cursor-pointer items-center gap-2 rounded-md px-2 py-1.5 text-sm hover:bg-accent">
+                  <label htmlFor={`collection-${c.id}`} className="flex cursor-pointer items-center gap-2 rounded-md px-2 py-1.5 text-sm hover:bg-accent">
                     <Checkbox
+                      id={`collection-${c.id}`}
                       checked={checked}
                       disabled={pending}
                       onCheckedChange={(v) => run(() => setBookInCollection(c.id, bookId, v === true))}

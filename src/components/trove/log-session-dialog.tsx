@@ -133,8 +133,8 @@ export function LogSessionDialog({
               <Label htmlFor="s-note">Note</Label>
               <Textarea id="s-note" rows={2} placeholder="Thoughts, quotes, where you read…" value={form.note} onChange={(e) => setForm({ ...form, note: e.target.value })} />
             </div>
-            <label className="flex items-center gap-2 text-sm sm:col-span-2">
-              <Checkbox checked={form.finished} onCheckedChange={(c) => setForm({ ...form, finished: c === true })} />
+            <label htmlFor="s-finished" className="flex items-center gap-2 text-sm sm:col-span-2">
+              <Checkbox id="s-finished" checked={form.finished} onCheckedChange={(c) => setForm({ ...form, finished: c === true })} />
               I finished this book 🎉
             </label>
             {pages > 0 && (

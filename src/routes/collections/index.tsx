@@ -32,6 +32,7 @@ function CollectionsPage() {
                   <FolderHeart className="mb-10 size-8 text-muted-foreground" />
                 ) : (
                   c.covers.map((src, i) => (
+                    // biome-ignore lint/suspicious/noArrayIndexKey: covers are a fixed preview of the first books; position is the identity
                     <div key={i} className="w-16 translate-y-4 transition-transform group-hover:translate-y-2" style={{ transitionDelay: `${i * 40}ms` }}>
                       <BookCover src={src} title={c.name} />
                     </div>
