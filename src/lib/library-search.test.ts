@@ -3,8 +3,8 @@ import { parseLibrarySearch } from "./library-search";
 
 describe("parseLibrarySearch", () => {
   it("keeps valid filters", () => {
-    expect(parseLibrarySearch({ q: " dune ", status: "reading", genre: "3", sort: "title", fav: "1" })).toEqual({
-      q: "dune",
+    expect(parseLibrarySearch({ q: " example ", status: "reading", genre: "3", sort: "title", fav: "1" })).toEqual({
+      q: "example",
       status: "reading",
       genre: 3,
       sort: "title",

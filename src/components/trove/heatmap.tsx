@@ -11,7 +11,7 @@ function bucket(pages: number, max: number) {
   return r > 0.75 ? 4 : r > 0.5 ? 3 : r > 0.25 ? 2 : 1;
 }
 
-/** GitHub-style calendar of pages read per day. Data starts on a Sunday. */
+/** Calendar grid of pages read per day. Data starts on a Sunday. */
 export function ReadingHeatmap({ data }: { data: DayPoint[] }) {
   const [hover, setHover] = useState<DayPoint | null>(null);
   const max = Math.max(...data.map((d) => d.pages), 1);

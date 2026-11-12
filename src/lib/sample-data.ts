@@ -40,24 +40,24 @@ type Seed = Omit<SampleBook, "cover" | "sessions" | "currentPage" | "startedAt" 
 };
 
 const SEEDS: Seed[] = [
-  { title: "The Signal at Kepler's Edge", author: "Idris Vellmore", pages: 387, year: 2014, format: "ebook", status: "finished", genres: ["Science Fiction"], rating: 5, favorite: true, window: [75, 62],
-    review: { headline: "Couldn't stop listening for the next transmission", body: "Funny, tense, and genuinely nerdy. The stranded engineer's voice carries the whole thing — I couldn't put it down." } },
-  { title: "The House of Tides", author: "Elowen Brackfold", pages: 272, year: 2020, format: "physical", status: "finished", genres: ["Fantasy", "Literary Fiction"], rating: 5, favorite: true, window: [60, 52],
-    review: { headline: "A dream of a book", body: "Strange, gentle and beautiful. The flooded halls are one of the most memorable settings I've ever read." } },
-  { title: "Daughter of the Salt Isle", author: "Marisol Thornmere", pages: 393, year: 2018, format: "audiobook", status: "finished", genres: ["Fantasy", "Mythology"], rating: 4, window: [50, 33] },
-  { title: "Everything the Orchard Kept", author: "Wynna Caldridge", pages: 352, year: 2018, format: "physical", status: "finished", genres: ["Memoir", "Nonfiction"], rating: 4, window: [32, 15] },
-  { title: "Relay Beyond Tannis", author: "Idris Vellmore", pages: 496, year: 2021, format: "physical", status: "reading", genres: ["Science Fiction"], window: [14, 1], progress: 0.55 },
-  { title: "The Lantern Oath", author: "Corvin Ashby", pages: 662, year: 2007, format: "ebook", status: "reading", genres: ["Fantasy"], window: [20, 3], progress: 0.2 },
-  { title: "The Little Door Under Hollowhill", author: "Teodric Fenwick", pages: 300, year: 1937, format: "physical", status: "finished", genres: ["Fantasy", "Classics"], rating: 5, favorite: true, finishedDaysAgo: 140 },
-  { title: "Letters from Larkspur Hall", author: "Rosalind Marrow", pages: 480, year: 1813, format: "physical", status: "finished", genres: ["Classics", "Romance"], rating: 4, finishedDaysAgo: 210 },
-  { title: "The Quiet Ministry", author: "Osric Dunholt", pages: 328, year: 1949, format: "physical", status: "finished", genres: ["Classics", "Dystopian"], rating: 5, finishedDaysAgo: 260 },
-  { title: "The Winter Accord", author: "Liesel Orrenwyn", pages: 304, year: 1969, format: "ebook", status: "finished", genres: ["Science Fiction", "Classics"], rating: 4, finishedDaysAgo: 100 },
-  { title: "Rivers of Iron", author: "Halvard Pellcroft", pages: 464, year: 2015, format: "audiobook", status: "finished", genres: ["History", "Nonfiction"], rating: 3, finishedDaysAgo: 180 },
-  { title: "The Patient Mind", author: "Nerys Galworth", pages: 499, year: 2011, format: "physical", status: "reading", genres: ["Psychology", "Nonfiction"], window: [40, 25], progress: 0.3 },
-  { title: "Sands of Meridian", author: "Evander Quarrby", pages: 535, year: 1965, format: "physical", status: "want", genres: ["Science Fiction", "Classics"] },
-  { title: "The Lattice of Small Lights", author: "Junia Wickstead", pages: 303, year: 2021, format: "ebook", status: "want", genres: ["Literary Fiction", "Science Fiction"] },
-  { title: "The Five-Minute Practice", author: "Bastien Elholt", pages: 320, year: 2018, format: "physical", status: "want", genres: ["Self-Help", "Nonfiction"] },
-  { title: "The Bellmaker's Sons", author: "Thaddeus Norvane", pages: 796, year: 1880, format: "physical", status: "want", genres: ["Classics", "Literary Fiction"] },
+  { title: "Example 1", author: "Author 1", pages: 387, year: 2014, format: "ebook", status: "finished", genres: ["Science Fiction"], rating: 5, favorite: true, window: [75, 62],
+    review: { headline: "Example review 1", body: "Example review text." } },
+  { title: "Example 2", author: "Author 2", pages: 272, year: 2020, format: "physical", status: "finished", genres: ["Fantasy", "Literary Fiction"], rating: 5, favorite: true, window: [60, 52],
+    review: { headline: "Example review 2", body: "Example review text." } },
+  { title: "Example 3", author: "Author 3", pages: 393, year: 2018, format: "audiobook", status: "finished", genres: ["Fantasy", "Mythology"], rating: 4, window: [50, 33] },
+  { title: "Example 4", author: "Author 4", pages: 352, year: 2018, format: "physical", status: "finished", genres: ["Memoir", "Nonfiction"], rating: 4, window: [32, 15] },
+  { title: "Example 5", author: "Author 1", pages: 496, year: 2021, format: "physical", status: "reading", genres: ["Science Fiction"], window: [14, 1], progress: 0.55 },
+  { title: "Example 6", author: "Author 5", pages: 662, year: 2007, format: "ebook", status: "reading", genres: ["Fantasy"], window: [20, 3], progress: 0.2 },
+  { title: "Example 7", author: "Author 6", pages: 300, year: 1937, format: "physical", status: "finished", genres: ["Fantasy", "Classics"], rating: 5, favorite: true, finishedDaysAgo: 140 },
+  { title: "Example 8", author: "Author 7", pages: 480, year: 1813, format: "physical", status: "finished", genres: ["Classics", "Romance"], rating: 4, finishedDaysAgo: 210 },
+  { title: "Example 9", author: "Author 8", pages: 328, year: 1949, format: "physical", status: "finished", genres: ["Classics", "Dystopian"], rating: 5, finishedDaysAgo: 260 },
+  { title: "Example 10", author: "Author 9", pages: 304, year: 1969, format: "ebook", status: "finished", genres: ["Science Fiction", "Classics"], rating: 4, finishedDaysAgo: 100 },
+  { title: "Example 11", author: "Author 10", pages: 464, year: 2015, format: "audiobook", status: "finished", genres: ["History", "Nonfiction"], rating: 3, finishedDaysAgo: 180 },
+  { title: "Example 12", author: "Author 11", pages: 499, year: 2011, format: "physical", status: "reading", genres: ["Psychology", "Nonfiction"], window: [40, 25], progress: 0.3 },
+  { title: "Example 13", author: "Author 12", pages: 535, year: 1965, format: "physical", status: "want", genres: ["Science Fiction", "Classics"] },
+  { title: "Example 14", author: "Author 13", pages: 303, year: 2021, format: "ebook", status: "want", genres: ["Literary Fiction", "Science Fiction"] },
+  { title: "Example 15", author: "Author 14", pages: 320, year: 2018, format: "physical", status: "want", genres: ["Self-Help", "Nonfiction"] },
+  { title: "Example 16", author: "Author 15", pages: 796, year: 1880, format: "physical", status: "want", genres: ["Classics", "Literary Fiction"] },
 ];
 
 export function SAMPLE_BOOKS(): SampleBook[] {
@@ -99,7 +99,7 @@ export function SAMPLE_BOOKS(): SampleBook[] {
 }
 
 export const SAMPLE_COLLECTIONS = [
-  { name: "All-time favorites", description: "The books I'd save in a fire.", titles: ["The Signal at Kepler's Edge", "The House of Tides", "The Little Door Under Hollowhill", "The Quiet Ministry"] },
-  { name: "Classics challenge", description: "Working through the canon, one doorstopper at a time.", titles: ["Letters from Larkspur Hall", "The Quiet Ministry", "The Bellmaker's Sons", "Sands of Meridian", "The Winter Accord"] },
-  { name: "Sci-fi shelf", description: null, titles: ["The Signal at Kepler's Edge", "Relay Beyond Tannis", "Sands of Meridian", "The Lattice of Small Lights", "The Winter Accord"] },
+  { name: "Collection 1", description: "Example description.", titles: ["Example 1", "Example 2", "Example 7", "Example 9"] },
+  { name: "Collection 2", description: "Example description.", titles: ["Example 8", "Example 9", "Example 16", "Example 13", "Example 10"] },
+  { name: "Collection 3", description: null, titles: ["Example 1", "Example 5", "Example 13", "Example 14", "Example 10"] },
 ];

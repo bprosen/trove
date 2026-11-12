@@ -17,7 +17,8 @@ export const Route = createRootRoute({
     ],
     links: [
       { rel: "stylesheet", href: appCss },
-      { rel: "icon", href: "/favicon.ico" },
+      // Empty inline icon: stops browsers from requesting /favicon.ico.
+      { rel: "icon", href: "data:," },
     ],
   }),
   loader: () => getHeaderStats(),

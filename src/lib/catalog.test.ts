@@ -6,16 +6,21 @@ describe("searchCatalog", () => {
     expect(searchCatalog("   ")).toEqual([]);
   });
 
-  it("finds books by title words, ignoring case and punctuation", () => {
-    const results = searchCatalog("ALIBI candlelight");
-    expect(results[0]?.title).toBe("Alibi by Candlelight");
+  it("ranks an exact title match first, ignoring case", () => {
+    expect(searchCatalog("BOOK 12")[0]?.title).toBe("Book 12");
+  });
+
+  it("finds books by author", () => {
+    const results = searchCatalog("author 7");
+    expect(results.length).toBeGreaterThan(0);
+    expect(results.every((b) => b.author.startsWith("Author 7"))).toBe(true);
   });
 
   it("requires every word to match", () => {
-    expect(searchCatalog("alibi zzzzqqq")).toEqual([]);
+    expect(searchCatalog("book zzzzqqq")).toEqual([]);
   });
 
   it("respects the limit", () => {
-    expect(searchCatalog("the", 3)).toHaveLength(3);
+    expect(searchCatalog("book", 3)).toHaveLength(3);
   });
 });

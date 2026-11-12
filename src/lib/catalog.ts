@@ -52,7 +52,7 @@ export function searchCatalog(query: string, limit = 8): CatalogBook[] {
     else if (entry.title.startsWith(q)) score += 50;
     else if (entry.title.includes(q)) score += 25;
     if (entry.author.includes(q)) score += 20;
-    // Words that start a title word beat mid-word matches ("dune" > "redundant").
+    // Words that start a title word beat mid-word matches ("book" > "notebook").
     for (const w of words) if (` ${haystack}`.includes(` ${w}`)) score += 5;
     scored.push({ book: entry.book, score });
   }
