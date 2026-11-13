@@ -96,6 +96,17 @@ export const MIGRATIONS: Migration[] = [
         );
       `),
   },
+  {
+    name: "achievement unlocks",
+    up: (db) =>
+      db.exec(`
+        CREATE TABLE achievement_unlocks (
+          id TEXT PRIMARY KEY,
+          unlocked_at TEXT NOT NULL DEFAULT (datetime('now')),
+          seen INTEGER NOT NULL DEFAULT 0
+        );
+      `),
+  },
 ];
 
 export function schemaVersion(db: DatabaseSync): number {
@@ -261,6 +272,9 @@ export type ReadingSessionRow = {
 };
 
 export type SettingRow = { key: string; value: string };
+
+/** `seen` flips to 1 once the client has played the unlock celebration. */
+export type AchievementUnlockRow = { id: string; unlocked_at: string; seen: Flag };
 
 /** Single-number aggregate, e.g. `SELECT COUNT(*) AS n ...`. */
 export type CountRow = { n: number };

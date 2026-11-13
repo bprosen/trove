@@ -7,14 +7,24 @@ import { createServerFn } from "@tanstack/react-start";
 import { objectInput } from "./server-input";
 import * as Q from "./queries.server";
 import { getStats } from "./stats.server";
+import { achievementStatuses } from "./achievements";
 import type { LibrarySearch } from "./library-search";
 
 export type { LibrarySearch };
 
-/** Header badges (streak + level) shown on every page. */
+/**
+ * Header badges (streak + level) shown on every page, plus achievements whose unlock celebration
+ * hasn't played yet. This is the root loader, so it re-runs after every mutation — that's how a
+ * new unlock reaches the client no matter which action caused it.
+ */
 export const getHeaderStats = createServerFn({ method: "GET" }).handler(async () => {
   const s = await getStats();
-  return { currentStreak: s.currentStreak, streakAtRisk: s.streakAtRisk, level: s.level };
+  return {
+    currentStreak: s.currentStreak,
+    streakAtRisk: s.streakAtRisk,
+    level: s.level,
+    newUnlocks: s.unlocks.filter((u) => !u.seen).map((u) => u.id),
+  };
 });
 
 export const getTodayPage = createServerFn({ method: "GET" }).handler(async () => {
@@ -100,7 +110,12 @@ export const getSettingsPage = createServerFn({ method: "GET" }).handler(async (
   return { settings: await Q.getSettings() };
 });
 
-/** Stats + achievements pages only need the stats snapshot. */
+export const getAchievementsPage = createServerFn({ method: "GET" }).handler(async () => {
+  const s = await getStats();
+  return { achievements: achievementStatuses(s.metrics, s.unlocks), level: s.level };
+});
+
+/** The stats page only needs the stats snapshot. */
 export const getStatsPage = createServerFn({ method: "GET" }).handler(async () => {
   return { stats: await getStats() };
 });

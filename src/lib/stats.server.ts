@@ -2,6 +2,9 @@ import { all, get, type BookRow, type CountRow, type ReadingSessionRow } from ".
 import { readSettings } from "./queries.server";
 import { addDays, daysBetween, parseISODate, today as todayISO } from "./dates";
 import { XP_RULES, levelFromXp, type LevelInfo } from "./gamification";
+import { achievementXp } from "./achievements";
+import { syncAchievements } from "./achievements.server";
+import type { AchievementUnlockRow } from "./db.server";
 import type { BookStatus, Settings } from "./types";
 
 export type MetricKey =
@@ -23,7 +26,16 @@ export type MetricKey =
   | "goalDays"
   | "authorsFinished"
   | "dnf"
-  | "readingDays";
+  | "readingDays"
+  | "fiveStars"
+  | "oneStars"
+  | "longestReview"
+  | "formatsFinished"
+  | "maxPagesInDay"
+  | "maxBooksInDay"
+  | "weekendDays"
+  | "comebacks"
+  | "yearGoalMet";
 
 /** Lifetime reading metrics computed from the database. */
 export type Metrics = Record<MetricKey, number>;
@@ -41,6 +53,10 @@ type Snapshot = {
   currentStreak: number;
   streakAtRisk: boolean;
   baseXp: number;
+  /** Includes the bonus XP from unlocked achievements. */
+  totalXp: number;
+  unlocks: AchievementUnlockRow[];
+  finishedThisYear: number;
 };
 
 /** One pass over the DB producing every number the gamification layer needs. */
@@ -48,9 +64,9 @@ function snapshot(): Snapshot {
   const settings = readSettings();
   const today = todayISO();
 
-  const books = all<Pick<BookRow, "id" | "author" | "status" | "rating" | "favorite" | "page_count" | "started_at" | "finished_at">>(
-    "SELECT id, author, status, rating, favorite, page_count, started_at, finished_at FROM books",
-  );
+  const books = all<
+    Pick<BookRow, "id" | "author" | "format" | "status" | "rating" | "favorite" | "page_count" | "started_at" | "finished_at">
+  >("SELECT id, author, format, status, rating, favorite, page_count, started_at, finished_at FROM books");
 
   const sessions = all<Pick<ReadingSessionRow, "book_id" | "date" | "pages" | "minutes">>(
     "SELECT book_id, date, pages, minutes FROM reading_sessions",
@@ -84,16 +100,21 @@ function snapshot(): Snapshot {
   let longestBookFinished = 0;
   let quickFinishes = 0;
   let favorites = 0;
+  const formatsFinished = new Set<string>();
   for (const b of books) {
     byStatus[b.status]++;
     if (b.rating != null) ratings.push(b.rating);
     if (b.favorite) favorites++;
     if (b.status === "finished") {
       if (b.author) authors.add(b.author.trim().toLowerCase());
+      formatsFinished.add(b.format);
       if (b.finished_at) finishedDates.push(b.finished_at);
       longestBookFinished = Math.max(longestBookFinished, b.page_count ?? 0);
       if (!booksWithSessions.has(b.id)) unsessionedFinishedPages += b.page_count ?? 0;
-      if (b.started_at && b.finished_at && daysBetween(b.started_at, b.finished_at) <= 7) quickFinishes++;
+      // Only books with logged sessions: marking an already-read book "finished" sets both dates to today.
+      if (b.started_at && b.finished_at && booksWithSessions.has(b.id) && daysBetween(b.started_at, b.finished_at) <= 7) {
+        quickFinishes++;
+      }
     }
   }
 
@@ -104,6 +125,7 @@ function snapshot(): Snapshot {
   );
   const reviews = count("SELECT COUNT(*) AS n FROM reviews");
   const collections = count("SELECT COUNT(*) AS n FROM collections");
+  const longestReview = count("SELECT COALESCE(MAX(LENGTH(body)), 0) AS n FROM reviews");
 
   // Streaks — a "reading day" is any day with pages or minutes logged.
   const readingDates = [...days.entries()]
@@ -113,10 +135,17 @@ function snapshot(): Snapshot {
   const readSet = new Set(readingDates);
   let longestStreak = 0;
   let run = 0;
+  let comebacks = 0;
+  let weekendDays = 0;
   let prev: string | null = null;
   for (const d of readingDates) {
-    run = prev && daysBetween(prev, d) === 1 ? run + 1 : 1;
+    const gap = prev ? daysBetween(prev, d) : 0;
+    run = gap === 1 ? run + 1 : 1;
     longestStreak = Math.max(longestStreak, run);
+    // 30+ full days without reading, then back at it.
+    if (gap > 30) comebacks++;
+    const dow = parseISODate(d).getDay();
+    if (dow === 0 || dow === 6) weekendDays++;
     prev = d;
   }
   let currentStreak = 0;
@@ -128,6 +157,13 @@ function snapshot(): Snapshot {
   const streakAtRisk = currentStreak > 0 && !readSet.has(today);
 
   const goalDays = [...days.values()].filter((d) => d.pages >= settings.dailyPageGoal).length;
+  let maxPagesInDay = 0;
+  let maxBooksInDay = 0;
+  for (const d of days.values()) {
+    maxPagesInDay = Math.max(maxPagesInDay, d.pages);
+    maxBooksInDay = Math.max(maxBooksInDay, d.books.size);
+  }
+  const finishedThisYear = finishedDates.filter((d) => d.startsWith(today.slice(0, 4))).length;
   const pagesRead = sessionPages + unsessionedFinishedPages;
 
   const metrics: Metrics = {
@@ -150,6 +186,15 @@ function snapshot(): Snapshot {
     authorsFinished: authors.size,
     dnf: byStatus.dnf,
     readingDays: readingDates.length,
+    fiveStars: ratings.filter((r) => r === 5).length,
+    oneStars: ratings.filter((r) => r === 1).length,
+    longestReview,
+    formatsFinished: formatsFinished.size,
+    maxPagesInDay,
+    maxBooksInDay,
+    weekendDays,
+    comebacks,
+    yearGoalMet: settings.yearlyBookGoal > 0 && finishedThisYear >= settings.yearlyBookGoal ? 1 : 0,
   };
 
   const baseXp = Math.floor(
@@ -160,7 +205,13 @@ function snapshot(): Snapshot {
       reviews * XP_RULES.perReview,
   );
 
-  return { settings, today, days, metrics, byStatus, finishedDates, ratings, currentStreak, streakAtRisk, baseXp };
+  const unlocks = syncAchievements(metrics);
+  const totalXp = baseXp + achievementXp(unlocks.map((u) => u.id));
+
+  return {
+    settings, today, days, metrics, byStatus, finishedDates, ratings, currentStreak, streakAtRisk,
+    baseXp, totalXp, unlocks, finishedThisYear,
+  };
 }
 
 export type Quest = { id: string; label: string; current: number; target: number; unit: string; xp: number };
@@ -208,6 +259,7 @@ export type Stats = {
   genreBreakdown: { name: string; books: number }[];
   weekPages: number;
   lastWeekPages: number;
+  unlocks: AchievementUnlockRow[];
 };
 
 export async function getStats(): Promise<Stats> {
@@ -256,14 +308,14 @@ export async function getStats(): Promise<Stats> {
     settings: snap.settings,
     today: snap.today,
     metrics: snap.metrics,
-    level: levelFromXp(snap.baseXp),
+    level: levelFromXp(snap.totalXp),
     currentStreak: snap.currentStreak,
     longestStreak: snap.metrics.longestStreak,
     streakAtRisk: snap.streakAtRisk,
     todayPages: snap.days.get(snap.today)?.pages ?? 0,
     todayMinutes: snap.days.get(snap.today)?.minutes ?? 0,
     quests: dailyQuests(snap),
-    finishedThisYear: snap.finishedDates.filter((d) => d.startsWith(year)).length,
+    finishedThisYear: snap.finishedThisYear,
     byStatus: snap.byStatus,
     avgRating,
     ratingDistribution: [1, 2, 3, 4, 5].map((rating) => ({
@@ -277,5 +329,6 @@ export async function getStats(): Promise<Stats> {
     genreBreakdown,
     weekPages: sumPages(last14.slice(7)),
     lastWeekPages: sumPages(last14.slice(0, 7)),
+    unlocks: snap.unlocks,
   };
 }

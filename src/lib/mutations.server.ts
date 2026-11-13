@@ -369,6 +369,6 @@ export async function loadSampleData() {
 export async function resetAllData() {
   return mutate((db) => {
     db.exec(`DELETE FROM reading_sessions; DELETE FROM reviews; DELETE FROM collection_books; DELETE FROM collections;
-             DELETE FROM book_genres; DELETE FROM genres; DELETE FROM books;`);
+             DELETE FROM book_genres; DELETE FROM genres; DELETE FROM books; DELETE FROM achievement_unlocks;`);
   });
 }

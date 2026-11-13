@@ -6,6 +6,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { objectInput } from "./server-input";
 import * as M from "./mutations.server";
+import { markAchievementsSeen as markSeen } from "./achievements.server";
 import type { BookInput, SessionInput } from "./mutations.server";
 import type { BookStatus } from "./types";
 
@@ -124,3 +125,18 @@ export const loadSampleData = () => loadSampleDataFn();
 
 const resetAllDataFn = createServerFn({ method: "POST" }).handler(() => M.resetAllData());
 export const resetAllData = () => resetAllDataFn();
+
+// ---------- achievements ----------
+
+const markAchievementsSeenFn = createServerFn({ method: "POST" })
+  .validator((d: { ids: string[] }) => {
+    const { ids } = objectInput(d);
+    if (!Array.isArray(ids) || !ids.every((x) => typeof x === "string")) throw new Error("Invalid ids");
+    return { ids: ids.slice(0, 200) };
+  })
+  .handler(({ data }) => {
+    markSeen(data.ids);
+    return { ok: true } as const;
+  });
+/** Called once an unlock celebration has played, so it won't replay on the next load. */
+export const markAchievementsSeen = (ids: string[]) => markAchievementsSeenFn({ data: { ids } });

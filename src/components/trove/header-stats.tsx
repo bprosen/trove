@@ -29,7 +29,7 @@ export function HeaderStats({ stats: s }: { stats: HeaderStatsData }) {
         <Sparkles className="size-4 text-primary" />
         <span className="font-medium">Lv {s.level.level}</span>
         <span className="hidden h-1.5 w-16 overflow-hidden rounded-full bg-muted sm:block">
-          <span className="block h-full rounded-full bg-primary" style={{ width: `${Math.round(s.level.progress * 100)}%` }} />
+          <span className="block h-full rounded-full bg-primary transition-[width] duration-700" style={{ width: `${Math.round(s.level.progress * 100)}%` }} />
         </span>
       </Link>
     </div>

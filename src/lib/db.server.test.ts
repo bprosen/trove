@@ -12,6 +12,7 @@ describe("migrations", () => {
     const db = openDb(":memory:");
     expect(schemaVersion(db)).toBe(MIGRATIONS.length);
     expect(tables(db)).toEqual([
+      "achievement_unlocks",
       "book_genres",
       "books",
       "collection_books",
@@ -67,7 +68,7 @@ describe("migrations", () => {
         },
       },
     ];
-    expect(() => migrate(db, broken)).toThrow(/Migration 2 \("half-finished change"\) failed/);
+    expect(() => migrate(db, broken)).toThrow(`Migration ${MIGRATIONS.length + 1} ("half-finished change") failed`);
     expect(schemaVersion(db)).toBe(MIGRATIONS.length);
     expect(tables(db)).not.toContain("temp_table");
   });

@@ -4,6 +4,7 @@ import { Providers } from "@/components/providers";
 import { Brand, MobileNav, SidebarNav } from "@/components/trove/nav";
 import { ThemeToggle } from "@/components/trove/theme-toggle";
 import { HeaderStats } from "@/components/trove/header-stats";
+import { AchievementCelebration } from "@/components/trove/achievement-celebration";
 import { getHeaderStats } from "@/lib/data";
 import appCss from "@/styles.css?url";
 
@@ -67,6 +68,7 @@ function RootLayout() {
         </div>
       </div>
       <MobileNav />
+      <AchievementCelebration newUnlocks={headerStats.newUnlocks} />
     </>
   );
 }

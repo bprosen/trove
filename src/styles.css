@@ -156,3 +156,52 @@
     @apply font-sans;
   }
 }
+/* ---------- achievement animations ---------- */
+
+@keyframes ach-backdrop { from { opacity: 0; } to { opacity: 1; } }
+/* Medallion slams in with overshoot. */
+@keyframes ach-pop {
+  0% { transform: scale(0) rotate(-25deg); opacity: 0; }
+  55% { transform: scale(1.18) rotate(8deg); opacity: 1; }
+  75% { transform: scale(0.94) rotate(-3deg); }
+  100% { transform: scale(1) rotate(0); }
+}
+/* Coin-flip spin that settles face-forward. */
+@keyframes ach-flip {
+  from { transform: perspective(600px) rotateY(-540deg); }
+  to { transform: perspective(600px) rotateY(0); }
+}
+@keyframes ach-spin { to { transform: rotate(360deg); } }
+@keyframes ach-shockwave {
+  from { transform: scale(0.5); opacity: 0.9; }
+  to { transform: scale(2.6); opacity: 0; }
+}
+@keyframes ach-rise {
+  from { transform: translateY(14px); opacity: 0; filter: blur(4px); }
+  to { transform: translateY(0); opacity: 1; filter: blur(0); }
+}
+@keyframes ach-shine-sweep {
+  0%, 55% { transform: translateX(0) skewX(-20deg); }
+  100% { transform: translateX(400%) skewX(-20deg); }
+}
+@keyframes ach-twinkle {
+  0%, 100% { transform: translate(0, 0) scale(0); opacity: 0; }
+  30% { opacity: 1; transform: translate(calc(var(--dx) * 0.6), calc(var(--dy) * 0.6)) scale(1); }
+  100% { transform: translate(var(--dx), var(--dy)) scale(0); }
+}
+@keyframes ach-timer { from { transform: scaleX(1); } to { transform: scaleX(0); } }
+@keyframes ach-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+@keyframes ach-glow-pulse {
+  0%, 100% { opacity: 0.55; transform: scale(1); }
+  50% { opacity: 0.9; transform: scale(1.08); }
+}
+
+.ach-shine { animation: ach-shine-sweep 3.2s ease-in-out infinite; }
+
+@media (prefers-reduced-motion: reduce) {
+  /* biome-ignore lint/complexity/noImportantStyles: must beat the inline animation styles. */
+  [class*="ach-"], [class*="ach-"] * { animation-duration: 1ms !important; animation-iteration-count: 1 !important; }
+}
